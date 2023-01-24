@@ -1,0 +1,78 @@
+import base
+
+
+class toy_etl_selenium:
+
+    def __init__(self):
+
+        # initialising and setting the browser
+
+        web = 'https://irisx.nextscm.com/'
+        base.driver.get(web)
+        base.driver.maximize_window()
+        base.driver.implicitly_wait(5)
+        self.app_login()
+
+    def app_login(self):
+        # 1st page login
+        organisation_id = "playground"
+
+        org_id = base.driver.find_element(
+            by="xpath", value='//input[@id="auth-domain"]')
+        org_id.send_keys(organisation_id)
+
+        btn = base.driver.find_element(
+            by="xpath", value='//button[@class="btn btn-outline-primary btn-block mt-3"]')
+        btn.click()
+        #base.driver.implicitly_wait(5)
+        base.page_loaded.seleniumPageLoad(self,'//button[@class="btn btn-outline-primary btn-block mt-3"]')
+        self.main_login()
+
+    def main_login(self):
+        # 2nd login
+        u_name = "training-user-1"
+        pas = "Training@increff2022"
+        username = base.driver.find_element(
+            by="xpath", value='//input[@id="username"]')
+        username.send_keys(u_name)
+        password = base.driver.find_element(
+            by="xpath", value='//input[@id="credential"]')
+        password.send_keys(pas)
+        submit = base.driver.find_element(
+            by="xpath", value='//button[@type="submit"]')
+        submit.click()
+        base.page_loaded.seleniumPageLoad(self,'//button[@type="submit"]')
+        #base.driver.implicitly_wait(2)
+        self.click_masters()
+
+    def click_masters(self):
+        # getting into masters
+        masters = base.driver.find_element(
+            by="xpath", value='//i[@class="h1 mdi mdi-view-grid"]')
+        masters.click()
+        base.page_loaded.seleniumPageLoad(self,'//i[@class="h1 mdi mdi-view-grid"]')
+        #base.time.sleep(5)
+        self.download_files()
+
+    def download_files(self):
+        # downloading required files
+        ean_master = base.driver.find_elements(
+            by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[1]
+        ean_master.click()
+        base.downloaded.is_download_complete()
+        store_master = base.driver.find_elements(
+            by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[3]
+        store_master.click()
+        base.downloaded.is_download_complete()
+        base.driver.quit()
+        #self.get_all_files()
+
+   
+
+   
+    
+
+toy_etl_selenium()
+base.rename.rename_downloaded_files()
+
+
