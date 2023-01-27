@@ -1,6 +1,7 @@
 import selenium
 import time
 import downloaded
+import download_2
 from selenium.webdriver.common.keys import Keys
 import os
 import rename
@@ -15,11 +16,20 @@ from selenium.webdriver.common.by import By
 options = Options()
 
 #download dirctory change
-prefs = {"download.default_directory" : r"G:\toy_etl_project\masters_data\\"}
-options.add_experimental_option("prefs" , prefs)
+def download_directory_set(path):
+    dir="G:\toy_etl_project\masters_data"
+    prefs = {"download.default_directory" : r"G:\toy_etl_project\masters_data","directory_upgrade": True}
+    
+    options.add_experimental_option("prefs" , prefs)
+    driver = webdriver.Chrome(service=Service(), options=options)
+   # dir=os.path.join("G:\toy_etl_project\masters_data",path)
+    
+    
+
 
 
 options.add_experimental_option("detach", True)
+    
 
 
 

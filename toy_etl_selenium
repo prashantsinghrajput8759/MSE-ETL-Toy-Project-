@@ -14,6 +14,8 @@ class toy_etl_selenium:
         self.app_login()
 
     def app_login(self):
+
+        base.page_loaded.seleniumPageLoad(self,'//button[@class="btn btn-outline-primary btn-block mt-3"]')
         # 1st page login
         organisation_id = "playground"
 
@@ -23,12 +25,15 @@ class toy_etl_selenium:
 
         btn = base.driver.find_element(
             by="xpath", value='//button[@class="btn btn-outline-primary btn-block mt-3"]')
+        
         btn.click()
         #base.driver.implicitly_wait(5)
-        base.page_loaded.seleniumPageLoad(self,'//button[@class="btn btn-outline-primary btn-block mt-3"]')
+       
         self.main_login()
 
     def main_login(self):
+
+        base.page_loaded.seleniumPageLoad(self,'//button[@type="submit"]')
         # 2nd login
         u_name = "training-user-1"
         pas = "Training@increff2022"
@@ -41,29 +46,43 @@ class toy_etl_selenium:
         submit = base.driver.find_element(
             by="xpath", value='//button[@type="submit"]')
         submit.click()
-        base.page_loaded.seleniumPageLoad(self,'//button[@type="submit"]')
+       
         #base.driver.implicitly_wait(2)
         self.click_masters()
 
     def click_masters(self):
+
+        base.page_loaded.seleniumPageLoad(self,'//i[@class="h1 mdi mdi-view-grid"]')
         # getting into masters
         masters = base.driver.find_element(
             by="xpath", value='//i[@class="h1 mdi mdi-view-grid"]')
         masters.click()
-        base.page_loaded.seleniumPageLoad(self,'//i[@class="h1 mdi mdi-view-grid"]')
+        
         #base.time.sleep(5)
         self.download_files()
 
     def download_files(self):
+        #create a temp folder to store the download 
+        path=base.download_2.create_dir()
+        
+        base.download_directory_set(path)
+        base.time.sleep(5)
+
+        print(path)
         # downloading required files
         ean_master = base.driver.find_elements(
             by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[1]
         ean_master.click()
-        base.downloaded.is_download_complete()
+       # base.downloaded.is_download_complete(path)
+        base.time.sleep(5)
+        path=base.download_2.create_dir()
+        
+       # base.download_directory_set(path)
+        print(path)
         store_master = base.driver.find_elements(
             by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[3]
-        store_master.click()
-        base.downloaded.is_download_complete()
+        #store_master.click()
+        #base.downloaded.is_download_complete(path)
         base.driver.quit()
         #self.get_all_files()
 
@@ -73,6 +92,6 @@ class toy_etl_selenium:
     
 
 toy_etl_selenium()
-base.rename.rename_downloaded_files()
+#base.rename.rename_downloaded_files()
 
 
