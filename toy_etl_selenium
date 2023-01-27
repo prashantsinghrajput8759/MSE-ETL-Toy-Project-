@@ -14,6 +14,8 @@ class toy_etl_selenium:
         self.app_login()
 
     def app_login(self):
+        #cheking if page is loaded 
+        base.page_loaded.seleniumPageLoad(self,'//button[@class="btn btn-outline-primary btn-block mt-3"]')
         # 1st page login
         organisation_id = "playground"
 
@@ -25,10 +27,12 @@ class toy_etl_selenium:
             by="xpath", value='//button[@class="btn btn-outline-primary btn-block mt-3"]')
         btn.click()
         #base.driver.implicitly_wait(5)
-        base.page_loaded.seleniumPageLoad(self,'//button[@class="btn btn-outline-primary btn-block mt-3"]')
+       
         self.main_login()
 
     def main_login(self):
+
+        base.page_loaded.seleniumPageLoad(self,'//button[@type="submit"]')
         # 2nd login
         u_name = "training-user-1"
         pas = "Training@increff2022"
@@ -41,32 +45,65 @@ class toy_etl_selenium:
         submit = base.driver.find_element(
             by="xpath", value='//button[@type="submit"]')
         submit.click()
-        base.page_loaded.seleniumPageLoad(self,'//button[@type="submit"]')
+        
         #base.driver.implicitly_wait(2)
         self.click_masters()
 
     def click_masters(self):
+        base.page_loaded.seleniumPageLoad(self,'//i[@class="h1 mdi mdi-view-grid"]')
         # getting into masters
         masters = base.driver.find_element(
             by="xpath", value='//i[@class="h1 mdi mdi-view-grid"]')
         masters.click()
-        base.page_loaded.seleniumPageLoad(self,'//i[@class="h1 mdi mdi-view-grid"]')
+        
         #base.time.sleep(5)
         self.download_files()
 
     def download_files(self):
+
+        #clearing the download directory
+        try:
+            self.clear_dir()
+        except:
+            print('failed to clear directory')
+            base.driver.quit()
+            return
         # downloading required files
-        ean_master = base.driver.find_elements(
-            by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[1]
-        ean_master.click()
-        base.downloaded.is_download_complete()
-        store_master = base.driver.find_elements(
-            by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[3]
-        store_master.click()
-        base.downloaded.is_download_complete()
+        try:
+            ean_master = base.driver.find_elements(
+                by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[1]
+            ean_master.click()
+        except:
+            print('download failed')
+            base.driver.quit()
+        
+        flag=base.downloaded.is_download_complete()
+
+        #checking if download is completed within time
+        if(flag==0):
+            print('download error')
+            base.driver.quit()
+
+        try:
+            store_master = base.driver.find_elements(
+                by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[3]
+            store_master.click()
+        except:
+            print('download failed')
+        flag=base.downloaded.is_download_complete()
+        if(flag==0):
+            print('download error')
         base.driver.quit()
         #self.get_all_files()
+    def clear_dir(self):
 
+        
+        files=base.os.listdir('G:\Toy_etl_project\masters_data')
+        
+        dir='G:\Toy_etl_project\masters_data'
+        for file in files:
+            base.os.remove(dir+'/'+file)
+        return
    
 
    
