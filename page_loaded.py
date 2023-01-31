@@ -11,5 +11,7 @@ def seleniumPageLoad(self,path):
     )
         print("Page is loaded within 10 seconds.")
     except:
+
         print("Timeout Exception: Page did not load within 10 seconds.")
+        
 

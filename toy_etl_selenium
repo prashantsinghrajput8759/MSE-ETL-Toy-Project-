@@ -1,5 +1,5 @@
 import base
-
+import upload
 
 class toy_etl_selenium:
 
@@ -64,11 +64,13 @@ class toy_etl_selenium:
         #clearing the download directory
         try:
             self.clear_dir()
-        except:
-            print('failed to clear directory')
+        except Exception as e:
+            print('failed to clear directory '+ e)
             base.driver.quit()
             return
         # downloading required files
+
+        
         try:
             ean_master = base.driver.find_elements(
                 by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[1]
@@ -83,18 +85,50 @@ class toy_etl_selenium:
         if(flag==0):
             print('download error')
             base.driver.quit()
-
+            return
+        print('file downloaded succesfully')
+        try:
+            base.rename.rename_downloaded_files()
+            print('file renamed seccessfullt!!!')
+        except Exception as e:
+            print(e)
+            return
+        
         try:
             store_master = base.driver.find_elements(
                 by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[3]
             store_master.click()
         except:
             print('download failed')
+            base.driver.quit()
+            return
         flag=base.downloaded.is_download_complete()
         if(flag==0):
+            
             print('download error')
+            base.driver.quit()
+            return
+        print('file downloaded succesfully')
+        try:
+            base.rename.rename_downloaded_files()
+            print('file renamed seccessfullt!!!')
+        except:
+            print('rename error')
+            return
+        
+        try:
+            upload.upload_files()
+            print('file uploaded successfully!!!')
+        except Exception as e:
+            print('failed to connect ')
+            base.driver.quit()
+            return
+
+
         base.driver.quit()
         #self.get_all_files()
+
+
     def clear_dir(self):
 
         
@@ -110,6 +144,6 @@ class toy_etl_selenium:
     
 
 toy_etl_selenium()
-base.rename.rename_downloaded_files()
+
 
 

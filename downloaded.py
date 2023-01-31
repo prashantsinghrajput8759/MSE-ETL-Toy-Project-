@@ -5,7 +5,7 @@ def is_download_complete():
     entries = os.listdir('G:\Toy_etl_project\masters_data')
     length=len(entries)
 
-    cur=len
+    cur=length
     
     start=timer()
     end =timer()
@@ -13,7 +13,7 @@ def is_download_complete():
     while(end-start<300):
         end=timer()
         cur=len(os.listdir('G:\Toy_etl_project\masters_data'))
-        if(cur==length+1 and check()):
+        if(cur>=length+1 and check()):
             break
         
     if(end-start>=300):
@@ -26,8 +26,10 @@ def check(): # checking if file format is .tsv of all files / checking for incom
 
         split_tup = os.path.splitext(file)
         
-        if(split_tup[1].lower()!='.tsv'):
+        if(split_tup[1].lower()=='.crdownload' or split_tup[1].lower()=='.tmp'):
             return False
   
         
     return True
+
+    #check for substring
