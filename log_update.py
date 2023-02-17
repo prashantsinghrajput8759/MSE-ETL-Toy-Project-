@@ -1,4 +1,5 @@
 # importing required library
+import base
 import mysql.connector
 from datetime import datetime
 
@@ -27,4 +28,5 @@ def update_log(script_name,status,reason):
 
     except Exception as log_error:
         print(log_error)
+        base.driver.quit()
 

@@ -27,6 +27,7 @@ class toy_etl_selenium:
         except Exception as error:
             print(error)
             log_update.update_log('Data Extract - Python','FAILED', 'web driver error')
+            base.driver.quit()
             return
 
         self.app_login()
@@ -50,6 +51,7 @@ class toy_etl_selenium:
         except Exception as login_error:
             print(login_error)
             log_update.update_log('Data Extract - Python','FAILED', 'unable to app login')
+            base.driver.quit()
             return
         # direct to next page login
         self.main_login()
@@ -82,6 +84,7 @@ class toy_etl_selenium:
         except Exception as main_login_error:
             print(main_login_error)
             log_update.update_log('Data Extract - Python','FAILED', 'Failed to main login')
+            base.driver.quit()
             return
 
         self.click_masters()
@@ -101,6 +104,7 @@ class toy_etl_selenium:
         except Exception as click_masters_error:
             print(click_masters_error)
             log_update.update_log('Data Extract - Python','FAILED', 'failed to target masters')
+            base.driver.quit()
             return
 
         self.download_files()
@@ -133,6 +137,7 @@ class toy_etl_selenium:
                     if (flag == 0):
                         print('file download failed')
                         log_update.update_log('Data Extract - Python','FAILED', 'File download failed')
+                        base.driver.quit()
                         return
                     else:
                         print('file downloaded succesfully')
@@ -141,6 +146,7 @@ class toy_etl_selenium:
         except Exception as download_error:
             print(download_error)
             log_update.update_log('Data Extract - Python','FAILED', 'File download failed')
+            base.driver.quit()
             return
               
             # renaming downloaded files
@@ -150,6 +156,7 @@ class toy_etl_selenium:
         except:
             print('rename error')
             log_update.update_log('Data Extract - Python','FAILED', 'failed to rename downloaded files')
+            base.driver.quit()
             return
 
         # uploading downloaded files to sftp
@@ -160,7 +167,9 @@ class toy_etl_selenium:
 
         except Exception as upload_error:
             print('File upload failed to SFTP')
+            base.driver.quit()
             log_update.update_log('Data Extract - Python','FAILED', 'Upload to SFTP failed')
+            
             return
 
         base.driver.quit()
@@ -178,4 +187,4 @@ class toy_etl_selenium:
 
 
 toy_etl_selenium()
-base.driver.quit
+base.driver.quit()

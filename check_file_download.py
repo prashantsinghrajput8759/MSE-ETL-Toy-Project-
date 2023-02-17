@@ -8,14 +8,14 @@ def is_download_complete():
     length=len(entries)
     start=timer()
     end =timer()
-    # checking for a max time of 10 sec
-    while(end-start<10): #length>0 removed
+    # checking for a max time of 15 sec
+    while(end-start<15): 
         end=timer()
         cur=len(os.listdir('G:\Toy_etl_project\masters_data'))
         if(cur>=length+1 and check()):
             break
         
-    if(end-start>=10):
+    if(end-start>=15):
         return 0
     return 1
 
