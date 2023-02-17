@@ -1,5 +1,15 @@
 import base
 import upload
+import log_update
+import download_file
+
+# setting up xpaths of files to be downloaded
+# format used - pair of 2 , one for hovering and other for downloading . for eg : index(0,1) index(2,3) are xpaths for ean and store master respectively
+xpath = ['//*[@id="content-overflow-container"]/div/com-file-uploads-master/div/div/com-file-uploads/div[1]/div[2]/div/div[2]/div[2]/div/button/i',
+         '//*[@id="content-overflow-container"]/div/com-file-uploads-master/div/div/com-file-uploads/div[1]/div[2]/div/div[2]/div[2]/div/div/i[1]',
+         '//*[@id="content-overflow-container"]/div/com-file-uploads-master/div/div/com-file-uploads/div[1]/div[4]/div/div[2]/div[2]/div/button/i',
+         '//*[@id="content-overflow-container"]/div/com-file-uploads-master/div/div/com-file-uploads/div[1]/div[4]/div/div[2]/div[2]/div/div/i[1]']
+
 
 class toy_etl_selenium:
 
@@ -8,142 +18,164 @@ class toy_etl_selenium:
         # initialising and setting the browser
 
         web = 'https://irisx.nextscm.com/'
-        base.driver.get(web)
-        base.driver.maximize_window()
-        base.driver.implicitly_wait(5)
+
+        try:
+
+            base.driver.get(web)
+            base.driver.maximize_window()
+            base.driver.implicitly_wait(5)
+        except Exception as error:
+            print(error)
+            log_update.update_log('Data Extract - Python','FAILED', 'web driver error')
+            return
+
         self.app_login()
 
     def app_login(self):
-        #cheking if page is loaded 
-        base.page_loaded.seleniumPageLoad(self,'//button[@class="btn btn-outline-primary btn-block mt-3"]')
-        # 1st page login
-        organisation_id = "playground"
 
-        org_id = base.driver.find_element(
-            by="xpath", value='//input[@id="auth-domain"]')
-        org_id.send_keys(organisation_id)
+        try:
 
-        btn = base.driver.find_element(
-            by="xpath", value='//button[@class="btn btn-outline-primary btn-block mt-3"]')
-        btn.click()
-        #base.driver.implicitly_wait(5)
-       
+            # cheking if page is loaded
+            base.page_loaded.seleniumPageLoad(self, '//button[@class="btn btn-outline-primary btn-block mt-3"]')
+
+            # 1st page login
+            organisation_id = "playground"
+            organisation_id_element = base.driver.find_element(by="xpath", value='//input[@id="auth-domain"]')
+            organisation_id_element.send_keys(organisation_id)
+
+            # targeting button element 
+            btn = base.driver.find_element(by="xpath", value='//button[@class="btn btn-outline-primary btn-block mt-3"]')
+            btn.click()
+
+        except Exception as login_error:
+            print(login_error)
+            log_update.update_log('Data Extract - Python','FAILED', 'unable to app login')
+            return
+        # direct to next page login
         self.main_login()
 
+    # function for next page login 
     def main_login(self):
 
-        base.page_loaded.seleniumPageLoad(self,'//button[@type="submit"]')
-        # 2nd login
-        u_name = "training-user-1"
-        pas = "Training@increff2022"
-        username = base.driver.find_element(
-            by="xpath", value='//input[@id="username"]')
-        username.send_keys(u_name)
-        password = base.driver.find_element(
-            by="xpath", value='//input[@id="credential"]')
-        password.send_keys(pas)
-        submit = base.driver.find_element(
-            by="xpath", value='//button[@type="submit"]')
-        submit.click()
-        
-        #base.driver.implicitly_wait(2)
+        try:
+
+            # checking if page loaded 
+            base.page_loaded.seleniumPageLoad(self, '//button[@type="submit"]')
+
+            # main page (2nd page) login
+            # credentials
+            usrname = "training-user-1"
+            passwrd = "Training@increff2022"
+
+            # targeting username element
+            username = base.driver.find_element(by="xpath", value='//input[@id="username"]')
+            username.send_keys(usrname)
+
+            # targeting password element
+            password = base.driver.find_element(by="xpath", value='//input[@id="credential"]')
+            password.send_keys(passwrd)
+
+            # targeting submit button
+            submit = base.driver.find_element(by="xpath", value='//button[@type="submit"]')
+            submit.click()
+
+        except Exception as main_login_error:
+            print(main_login_error)
+            log_update.update_log('Data Extract - Python','FAILED', 'Failed to main login')
+            return
+
         self.click_masters()
 
+    # function to get inside masters
     def click_masters(self):
-        base.page_loaded.seleniumPageLoad(self,'//i[@class="h1 mdi mdi-view-grid"]')
-        # getting into masters
-        masters = base.driver.find_element(
-            by="xpath", value='//i[@class="h1 mdi mdi-view-grid"]')
-        masters.click()
-        
-        #base.time.sleep(5)
+
+        try:
+
+            # check if page loaded 
+            base.page_loaded.seleniumPageLoad(self, '//i[@class="h1 mdi mdi-view-grid"]')
+
+            # targeting masters
+            masters = base.driver.find_element(by="xpath", value='//i[@class="h1 mdi mdi-view-grid"]')
+            masters.click()
+
+        except Exception as click_masters_error:
+            print(click_masters_error)
+            log_update.update_log('Data Extract - Python','FAILED', 'failed to target masters')
+            return
+
         self.download_files()
 
+    # function to initiate all downloads
     def download_files(self):
 
-        #clearing the download directory
         try:
             self.clear_dir()
-        except Exception as e:
-            print('failed to clear directory '+ e)
-            base.driver.quit()
-            return
-        # downloading required files
+            # clearing the download directory
 
-        
-        try:
-            ean_master = base.driver.find_elements(
-                by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[1]
-            ean_master.click()
-        except:
-            print('download failed')
-            base.driver.quit()
-        
-        flag=base.downloaded.is_download_complete()
+            # downloading required files
+            # storing size of xpath list declared at top
+            size_of_xpath_list = len(xpath)
 
-        #checking if download is completed within time
-        if(flag==0):
-            print('download error')
-            base.driver.quit()
+            index = 0  # index of list
+
+            # downloading one by one 
+            while (index < size_of_xpath_list):
+                    
+                    hover_xpath = xpath[index]
+                    download_xpath = xpath[index+1]
+
+                    # calling download_file  function inside download_file file to download
+                    download_file.download_file(hover_xpath, download_xpath)
+
+                    flag = base.check_file_download.is_download_complete()
+
+                    # checking if download is completed within time
+                    if (flag == 0):
+                        print('file download failed')
+                        log_update.update_log('Data Extract - Python','FAILED', 'File download failed')
+                        return
+                    else:
+                        print('file downloaded succesfully')
+                    index = index+2
+
+        except Exception as download_error:
+            print(download_error)
+            log_update.update_log('Data Extract - Python','FAILED', 'File download failed')
             return
-        print('file downloaded succesfully')
+              
+            # renaming downloaded files
         try:
             base.rename.rename_downloaded_files()
-            print('file renamed seccessfullt!!!')
-        except Exception as e:
-            print(e)
-            return
-        
-        try:
-            store_master = base.driver.find_elements(
-                by="xpath", value='//i[@class="pointer mdi mdi-download mdi-24px text-success"]')[3]
-            store_master.click()
-        except:
-            print('download failed')
-            base.driver.quit()
-            return
-        flag=base.downloaded.is_download_complete()
-        if(flag==0):
-            
-            print('download error')
-            base.driver.quit()
-            return
-        print('file downloaded succesfully')
-        try:
-            base.rename.rename_downloaded_files()
-            print('file renamed seccessfullt!!!')
+            print('file renamed successfull!!')
         except:
             print('rename error')
+            log_update.update_log('Data Extract - Python','FAILED', 'failed to rename downloaded files')
             return
-        
+
+        # uploading downloaded files to sftp
         try:
             upload.upload_files()
-            print('file uploaded successfully!!!')
-        except Exception as e:
-            print('failed to connect ')
-            base.driver.quit()
+            print('file uploaded successfully to SFTP!!!')
+            log_update.update_log('Data Extract - Python', 'SUCCESS', '-')
+
+        except Exception as upload_error:
+            print('File upload failed to SFTP')
+            log_update.update_log('Data Extract - Python','FAILED', 'Upload to SFTP failed')
             return
 
-
         base.driver.quit()
-        #self.get_all_files()
-
+        # self.get_all_files()
 
     def clear_dir(self):
 
-        
-        files=base.os.listdir('G:\Toy_etl_project\masters_data')
-        
-        dir='G:\Toy_etl_project\masters_data'
+        files = base.os.listdir('G:\Toy_etl_project\masters_data')
+
+        dir = 'G:\Toy_etl_project\masters_data'
         for file in files:
             base.os.remove(dir+'/'+file)
         return
-   
 
-   
-    
+
 
 toy_etl_selenium()
-
-
-
+base.driver.quit

@@ -1,10 +1,11 @@
-import selenium
-import time
-import downloaded
+
+# base file to contain imports and other functionalities common to each module
+
 from selenium.webdriver.common.keys import Keys
 import os
 import rename
 import page_loaded
+import check_file_download
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
